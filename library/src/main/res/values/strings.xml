@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Lib</string>
+    <string name="please_wait">Please wait…</string>
+
+    <string name="error">Error</string>
+    <string name="error.msg.timeout">Timeout error</string>
+    <string name="error.msg.unknown">Unknown error</string>
+    <string name="error.msg.parser">Parser error</string>
+    <string name="error.msg.no_internet">No internet connection error</string>
 </resources>
