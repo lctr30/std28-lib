@@ -1,10 +1,10 @@
-package com.showii.core.activities;
+package com.std28.lib.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.showii.core.interfaces.CommonsPreferences;
-import com.showii.core.utils.PreferencesImp;
+import com.std28.lib.implementations.PreferencesImp;
+import com.std28.lib.interfaces.CommonsPreferences;
 
 
 public class BasePreferencesActivity
