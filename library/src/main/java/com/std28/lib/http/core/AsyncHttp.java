@@ -5,6 +5,7 @@ import android.util.Log;
 
 
 import com.std28.lib.defs.Consts;
+import com.std28.lib.http.interfaces.ArrayResponse;
 
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrBuilder;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,7 +54,7 @@ public class AsyncHttp
             String authToken = request.getAuthToken();
 
             okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
-            builder.addHeader("Content-Type","application/json");
+            builder.addHeader("Content-Type", "application/json");
             builder.addHeader("Accept", "application/json");
             builder.url(url);
             Log.d(TAG, url);
@@ -78,7 +80,7 @@ public class AsyncHttp
                     Log.d(TAG, buffer.toString());
                 }
                 if (request.getMethod() == BaseRequest.Method.POST) {
-                    String args  = request.getJSONArgs().toString();
+                    String args = request.getJSONArgs().toString();
                     StrBuilder buffer = new StrBuilder();
                     buffer.append("http POST '");
                     buffer.append(url);
@@ -95,26 +97,18 @@ public class AsyncHttp
             }
 
             okhttp3.Request req = builder.build();
-            okhttp3.Response resp  = client.newCall(req).execute();
+            okhttp3.Response resp = client.newCall(req).execute();
+            //noinspection ConstantConditions
             String text = resp.body().string();
             Log.d(TAG, text);
             response.setText(text);
-            JSONObject jsonObject = new JSONObject(text);
-            response.setJsonObject(jsonObject);
             if (resp.code() == 200) {
                 response.setCode(BaseResponse.Code.OK);
             } else {
                 response.setCode(BaseResponse.Code.SERVER);
-                if (jsonObject.has("e")) {
-                    JSONObject error = jsonObject.getJSONObject("e");
-                    response.setErrorCode(error.getInt("code"));
-                    response.setErrorMessage(error.getString("message"));
-                }
             }
         } catch (SocketTimeoutException t) {
             response.setCode(BaseResponse.Code.TIMEOUT);
-        } catch (JSONException jsonEx) {
-            response.setCode(BaseResponse.Code.PARSER);
         } catch (Exception e) {
             e.printStackTrace();
             response.setCode(BaseResponse.Code.UNKNOWN);
@@ -144,16 +138,14 @@ public class AsyncHttp
 
         protected void onPostExecute(Void params) {
             if (this.response.getCode() == BaseResponse.Code.OK) {
-                JSONObject jsonObject = this.response.getJsonObject();
-                if (jsonObject.has("p")) {
-                    try {
-                        this.response.onResponse(jsonObject.getJSONObject("p"));
-                        return;
-                    } catch (JSONException e) {
-                            e.printStackTrace();
-                    }
+
+                if (this.response.isArrayResponse()) {
+                    JSONArray jsonArray = this.response.getJsonArray();
+                    this.response.onArrayResponse(jsonArray);
+                } else {
+                    JSONObject jsonObject = this.response.getJsonObject();
+                    this.response.onResponse(jsonObject);
                 }
-                this.response.onResponse(jsonObject);
             } else {
                 this.response.onError(this.response.getErrorMessage());
             }

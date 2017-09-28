@@ -4,8 +4,11 @@ import android.util.Log;
 
 import com.std28.lib.R;
 import com.std28.lib.app.BaseApp;
+import com.std28.lib.http.interfaces.ArrayResponse;
 import com.std28.lib.http.interfaces.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -27,6 +30,7 @@ public class BaseResponse
     private BaseRequest request;
     private String text;
     private JSONObject jsonObject;
+    private JSONArray jsonArray;
     private Response responseImp;
 
     public BaseResponse() {
@@ -63,6 +67,17 @@ public class BaseResponse
 
     public void setText(String text) {
         this.text = text;
+        try {
+            JSONObject jsonObject = new JSONObject(text);
+            setJsonObject(jsonObject);
+        } catch (JSONException ex1) {
+            try {
+                JSONArray jsonArray = new JSONArray(text);
+                setJsonArray(jsonArray);
+            } catch (JSONException ex2) {
+                ex2.printStackTrace();
+            }
+        }
     }
 
     public JSONObject getJsonObject() {
@@ -71,6 +86,14 @@ public class BaseResponse
 
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
+    }
+
+    public void setJsonArray(JSONArray jsonArray) {
+        this.jsonArray = jsonArray;
+    }
+
+    public JSONArray getJsonArray() {
+        return jsonArray;
     }
 
     public int getErrorCode() {
@@ -115,6 +138,20 @@ public class BaseResponse
         } else {
             Log.d(TAG, "No response implementation");
         }
+    }
+
+    public void onArrayResponse(JSONArray array) {
+        if (this.responseImp != null) {
+            ArrayResponse arrayResponse = (ArrayResponse) this.responseImp;
+            arrayResponse.onArrayResponse(array);
+        } else {
+            Log.d(TAG, "No response implementation");
+        }
+    }
+
+
+    public boolean isArrayResponse() {
+        return this.responseImp instanceof ArrayResponse;
     }
 
     public void onError(String message){
