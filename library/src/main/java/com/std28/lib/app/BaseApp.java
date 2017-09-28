@@ -8,7 +8,7 @@ public class BaseApp
     extends Application
 {
 
-    private static BaseApp instance;
+    private static Application instance;
 
     @Override
     public void onCreate() {
@@ -18,6 +18,10 @@ public class BaseApp
 
     public static Context getContext() {
         return instance.getApplicationContext();
+    }
+
+    public static void setApplication(Application app) {
+        instance = app;
     }
 
 }

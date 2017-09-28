@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -66,11 +67,30 @@ public class AsyncHttp
 
             if (DEBUG) {
                 if (request.getMethod() == BaseRequest.Method.GET) {
-                    Log.d(TAG, "http GET '"+ url + "' 'Authorization: " + authToken +"'");
+                    StrBuilder buffer = new StrBuilder();
+                    buffer.append("http GET '");
+                    buffer.append(url);
+                    if (StringUtils.isNotBlank(authToken)) {
+                        buffer.append("' 'Authorization: ");
+                        buffer.append(authToken);
+                        buffer.append("'");
+                    }
+                    Log.d(TAG, buffer.toString());
                 }
                 if (request.getMethod() == BaseRequest.Method.POST) {
                     String args  = request.getJSONArgs().toString();
-                    Log.d(TAG, "http POST '"+ url + "' 'Authorization: " + authToken + "' <<<' " + args+ "'");
+                    StrBuilder buffer = new StrBuilder();
+                    buffer.append("http POST '");
+                    buffer.append(url);
+                    if (StringUtils.isNotBlank(authToken)) {
+                        buffer.append("' 'Authorization: ");
+                        buffer.append(authToken);
+                        buffer.append("'");
+                    }
+                    buffer.append("' <<<' ");
+                    buffer.append(args);
+                    buffer.append("'");
+                    Log.d(TAG, buffer.toString());
                 }
             }
 
