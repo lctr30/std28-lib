@@ -7,6 +7,6 @@ public interface Response {
 
     void onResponse(JSONObject object);
 
-    void onError(String message);
+    void onError(int code, String message);
 
 }

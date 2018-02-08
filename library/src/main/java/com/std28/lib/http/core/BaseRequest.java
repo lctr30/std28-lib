@@ -3,6 +3,7 @@ package com.std28.lib.http.core;
 
 
 import com.std28.lib.defs.Consts;
+import com.std28.lib.http.interfaces.ErrorCode;
 import com.std28.lib.http.interfaces.Response;
 import com.std28.lib.implementations.PreferencesImp;
 import com.std28.lib.utils.NetworkUtils;
@@ -22,7 +23,9 @@ public abstract class BaseRequest
 
     public enum Method {
         POST,
-        GET
+        GET,
+        PUT,
+        DELETE
     }
 
     public static final String TAG = "BaseRequest";
@@ -88,8 +91,8 @@ public abstract class BaseRequest
             res.setRequest(this);
             new AsyncHttp().execute(this, res);
         } else {
-            res.setCode(BaseResponse.Code.NO_INTERNET);
-            res.onError(res.getErrorMessage());
+            res.setCode(ErrorCode.NO_INTERNET);
+            res.onError();
         }
     }
 
@@ -101,8 +104,8 @@ public abstract class BaseRequest
             res.setRequest(this);
             AsyncHttp.syncCall(this, res);
         } else {
-            res.setCode(BaseResponse.Code.NO_INTERNET);
-            res.onError(res.getErrorMessage());
+            res.setCode(ErrorCode.NO_INTERNET);
+            res.onError();
         }
         return res;
     }

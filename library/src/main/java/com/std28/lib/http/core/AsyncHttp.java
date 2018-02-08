@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.std28.lib.defs.Consts;
 import com.std28.lib.http.interfaces.ArrayResponse;
+import com.std28.lib.http.interfaces.ErrorCode;
 
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
@@ -67,34 +68,15 @@ public class AsyncHttp
                 builder.post(body);
             }
 
-            if (DEBUG) {
-                if (request.getMethod() == BaseRequest.Method.GET) {
-                    StrBuilder buffer = new StrBuilder();
-                    buffer.append("http GET '");
-                    buffer.append(url);
-                    if (StringUtils.isNotBlank(authToken)) {
-                        buffer.append("' 'Authorization: ");
-                        buffer.append(authToken);
-                        buffer.append("'");
-                    }
-                    Log.d(TAG, buffer.toString());
-                }
-                if (request.getMethod() == BaseRequest.Method.POST) {
-                    String args = request.getJSONArgs().toString();
-                    StrBuilder buffer = new StrBuilder();
-                    buffer.append("http POST '");
-                    buffer.append(url);
-                    if (StringUtils.isNotBlank(authToken)) {
-                        buffer.append("' 'Authorization: ");
-                        buffer.append(authToken);
-                        buffer.append("'");
-                    }
-                    buffer.append("' <<<' ");
-                    buffer.append(args);
-                    buffer.append("'");
-                    Log.d(TAG, buffer.toString());
-                }
+            if (request.getMethod() == BaseRequest.Method.PUT) {
+                JSONObject json = request.getJSONArgs();
+                RequestBody body = RequestBody.create(JSON, json.toString());
+                builder.put(body);
             }
+            if (request.getMethod() == BaseRequest.Method.DELETE) {
+                builder = builder.delete();
+            }
+            debugRequest(request, authToken);
 
             okhttp3.Request req = builder.build();
             okhttp3.Response resp = client.newCall(req).execute();
@@ -102,16 +84,14 @@ public class AsyncHttp
             String text = resp.body().string();
             Log.d(TAG, text);
             response.setText(text);
-            if (resp.code() == 200) {
-                response.setCode(BaseResponse.Code.OK);
-            } else {
-                response.setCode(BaseResponse.Code.SERVER);
-            }
+            response.setCode(resp.code());
         } catch (SocketTimeoutException t) {
-            response.setCode(BaseResponse.Code.TIMEOUT);
+            response.setCode(ErrorCode.TIMEOUT);
+            response.setErrorMessage(t.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            response.setCode(BaseResponse.Code.UNKNOWN);
+            response.setCode(ErrorCode.UNKNOWN);
+            response.setErrorMessage(e.getMessage());
         }
     }
 
@@ -119,8 +99,6 @@ public class AsyncHttp
 
 
     class AsyncRequest extends AsyncTask<Void, Void, Void> {
-
-
         BaseRequest request;
         BaseResponse response;
 
@@ -137,8 +115,7 @@ public class AsyncHttp
         }
 
         protected void onPostExecute(Void params) {
-            if (this.response.getCode() == BaseResponse.Code.OK) {
-
+            if (this.response.getCode() == ErrorCode.OK) {
                 if (this.response.isArrayResponse()) {
                     JSONArray jsonArray = this.response.getJsonArray();
                     this.response.onArrayResponse(jsonArray);
@@ -147,15 +124,51 @@ public class AsyncHttp
                     this.response.onResponse(jsonObject);
                 }
             } else {
-                this.response.onError(this.response.getErrorMessage());
+                this.response.onError();
             }
         }
-
     }
 
+    private static void debugRequest(BaseRequest request, String token) {
+        StringBuilder builder = new StringBuilder("http ");
+        String args  = request.getJSONArgs().toString();
+        switch (request.getMethod()) {
+            case GET:
+                builder.append("GET ");
+                args = null;
+                break;
+            case PUT:
+                builder.append("PUT ");
+                break;
+            case POST:
+                builder.append("POST ");
+                break;
+            case DELETE:
+                builder.append("DELETE ");
+                break;
+            default:
+                break;
+        }
+        builder.append("'");
+        builder.append(request.buildUrl());
+        builder.append("' ");
+        if (StringUtils.isNotBlank(token)) {
+            builder.append("'Authorization: ");
+            builder.append(token);
+            builder.append("' ");
+        }
+        if (StringUtils.isNotBlank(args)) {
+            builder.append("<<< '");
+            builder.append(args);
+            builder.append("'");
+        }
+        debug(TAG, builder.toString());
+    }
 
-
-
-
+    static void debug(String tag, String string) {
+        if (DEBUG) {
+            Log.d(tag, string);
+        }
+    }
 
 }
