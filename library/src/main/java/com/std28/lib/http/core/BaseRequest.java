@@ -145,4 +145,48 @@ public abstract class BaseRequest
         return new JSONObject(mParameters);
     }
 
+    public void get(Response httpResponse) {
+        setMethod(Method.GET);
+        call(httpResponse);
+    }
+
+    public BaseResponse get() {
+        setMethod(Method.GET);
+        return call();
+    }
+
+    public void post(Response httpResponse) {
+        setMethod(Method.POST);
+        call(httpResponse);
+    }
+
+    public BaseResponse post() {
+        setMethod(Method.POST);
+        return call();
+    }
+
+    public void put(Response httpResponse) {
+        setMethod(Method.PUT);
+        call(httpResponse);
+    }
+
+    public BaseResponse put() {
+        setMethod(Method.PUT);
+        return call();
+    }
+
+    public void delete(Response httpResponse) {
+        setMethod(Method.DELETE);
+        call(httpResponse);
+    }
+
+    public BaseResponse delete() {
+        setMethod(Method.DELETE);
+        return call();
+    }
+
+
+
+
+
 }
