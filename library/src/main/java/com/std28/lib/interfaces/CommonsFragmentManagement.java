@@ -10,18 +10,14 @@ import android.support.v4.app.FragmentManager;
 
 public interface CommonsFragmentManagement {
 
-    void initialize(FragmentManager fragmentManager, int mainContainerId);
-
     void addFragment(Fragment fragment, String tag);
 
     void replaceFragment(Fragment fragment, String tag);
 
     void replaceFragment(Fragment fragment, String tag, boolean addToBackStack);
 
-
     boolean isBackStackEmpty();
 
     void clearBackStack();
-
 
 }

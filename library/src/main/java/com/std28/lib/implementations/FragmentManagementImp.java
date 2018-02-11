@@ -20,11 +20,6 @@ public class FragmentManagementImp
 
     public FragmentManagementImp(FragmentManager fragmentManager, int mainContainerId) {
         super();
-        initialize(fragmentManager, mainContainerId);
-    }
-
-    @Override
-    public void initialize(FragmentManager fragmentManager, int mainContainerId) {
         this.fragmentManager = fragmentManager;
         this.mainContainerId = mainContainerId;
     }
