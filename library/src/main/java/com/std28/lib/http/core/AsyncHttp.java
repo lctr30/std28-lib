@@ -5,7 +5,6 @@ import android.util.Log;
 
 
 import com.std28.lib.defs.Consts;
-import com.std28.lib.http.interfaces.ArrayResponse;
 import com.std28.lib.http.interfaces.ErrorCode;
 
 import java.net.SocketTimeoutException;
@@ -13,9 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrBuilder;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import okhttp3.MediaType;
@@ -116,13 +113,7 @@ public class AsyncHttp
 
         protected void onPostExecute(Void params) {
             if (this.response.getCode() == ErrorCode.OK) {
-                if (this.response.isArrayResponse()) {
-                    JSONArray jsonArray = this.response.getJsonArray();
-                    this.response.onArrayResponse(jsonArray);
-                } else {
-                    JSONObject jsonObject = this.response.getJsonObject();
-                    this.response.onResponse(jsonObject);
-                }
+                this.response.onReponse();
             } else {
                 this.response.onError();
             }

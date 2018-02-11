@@ -2,8 +2,9 @@ package com.std28.lib.http.core;
 
 import android.util.Log;
 
-import com.std28.lib.http.interfaces.ArrayResponse;
+import com.std28.lib.http.interfaces.JSONArrayResponse;
 import com.std28.lib.http.interfaces.ErrorCode;
+import com.std28.lib.http.interfaces.JSONObjectResponse;
 import com.std28.lib.http.interfaces.Response;
 
 import org.json.JSONArray;
@@ -14,7 +15,7 @@ import org.json.JSONObject;
 public class BaseResponse
     implements ErrorCode
 {
-    static final String TAG = "BaseResponse";
+    public static final String TAG = "BaseResponse";
 
     private int code;
     private BaseRequest request;
@@ -59,40 +60,56 @@ public class BaseResponse
 
     public void setText(String text) {
         this.text = text;
-        try {
-            JSONObject jsonObject = new JSONObject(text);
-            setJsonObject(jsonObject);
-        } catch (JSONException ex1) {
-            try {
-                JSONArray jsonArray = new JSONArray(text);
-                setJsonArray(jsonArray);
-            } catch (JSONException ex2) {
-                ex2.printStackTrace();
-            }
-        }
     }
 
     public JSONObject getJsonObject() {
-        return jsonObject;
-    }
-
-    public void setJsonObject(JSONObject jsonObject) {
-        this.jsonObject = jsonObject;
-    }
-
-    public void setJsonArray(JSONArray jsonArray) {
-        this.jsonArray = jsonArray;
+        if (jsonObject != null) {
+            return jsonObject;
+        } else {
+            try {
+                jsonObject = new JSONObject(text);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return jsonObject;
+        }
     }
 
     public JSONArray getJsonArray() {
-        return jsonArray;
+        if (jsonArray != null) {
+            return jsonArray;
+        } else {
+            try {
+                jsonArray = new JSONArray(text);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return jsonArray;
+        }
     }
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
-    public void onResponse(JSONObject object) {
+    public void onReponse() {
+        if (this.responseImp instanceof JSONObjectResponse) {
+            JSONObjectResponse response = (JSONObjectResponse) this.responseImp;
+            response.onResponse(getJsonObject());
+            return;
+        }
+        if (this.responseImp instanceof JSONArrayResponse) {
+            JSONArrayResponse response = (JSONArrayResponse) this.responseImp;
+            response.onResponse(getJsonArray());
+            return;
+        }
+        responseImp.onResponse(getText());
+
+
+    }
+
+
+    public void onResponse(String object) {
         if (this.responseImp != null) {
             this.responseImp.onResponse(object);
         } else {
@@ -102,8 +119,8 @@ public class BaseResponse
 
     public void onArrayResponse(JSONArray array) {
         if (this.responseImp != null) {
-            ArrayResponse arrayResponse = (ArrayResponse) this.responseImp;
-            arrayResponse.onArrayResponse(array);
+            JSONArrayResponse jsonArrayResponse = (JSONArrayResponse) this.responseImp;
+            jsonArrayResponse.onResponse(array);
         } else {
             Log.d(TAG, "No response implementation");
         }
@@ -111,7 +128,7 @@ public class BaseResponse
 
 
     public boolean isArrayResponse() {
-        return this.responseImp instanceof ArrayResponse;
+        return this.responseImp instanceof JSONArrayResponse;
     }
 
     public void onError(){

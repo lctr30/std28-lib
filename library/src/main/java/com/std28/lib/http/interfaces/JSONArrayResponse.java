@@ -2,10 +2,9 @@ package com.std28.lib.http.interfaces;
 
 import org.json.JSONArray;
 
-public interface ArrayResponse
+public interface JSONArrayResponse
         extends Response
 {
-
-    void onArrayResponse(JSONArray array);
+    void onResponse(JSONArray array);
 
 }

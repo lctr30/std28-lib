@@ -1,11 +1,9 @@
 package com.std28.lib.http.interfaces;
 
-import org.json.JSONObject;
-
 
 public interface Response {
 
-    void onResponse(JSONObject object);
+    void onResponse(String string);
 
     void onError(int code, String message);
 
