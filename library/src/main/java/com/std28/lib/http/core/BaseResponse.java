@@ -6,6 +6,7 @@ import com.std28.lib.http.interfaces.JSONArrayResponse;
 import com.std28.lib.http.interfaces.ErrorCode;
 import com.std28.lib.http.interfaces.JSONObjectResponse;
 import com.std28.lib.http.interfaces.Response;
+import com.std28.lib.http.interfaces.StringResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,7 +93,12 @@ public class BaseResponse
         this.errorMessage = errorMessage;
     }
 
-    public void onReponse() {
+    public void onResponse() {
+        if (this.responseImp instanceof StringResponse) {
+            StringResponse response = (StringResponse) this.responseImp;
+            response.onResponse(getText());
+            return;
+        }
         if (this.responseImp instanceof JSONObjectResponse) {
             JSONObjectResponse response = (JSONObjectResponse) this.responseImp;
             response.onResponse(getJsonObject());
@@ -103,32 +109,7 @@ public class BaseResponse
             response.onResponse(getJsonArray());
             return;
         }
-        responseImp.onResponse(getText());
-
-
-    }
-
-
-    public void onResponse(String object) {
-        if (this.responseImp != null) {
-            this.responseImp.onResponse(object);
-        } else {
-            Log.d(TAG, "No response implementation");
-        }
-    }
-
-    public void onArrayResponse(JSONArray array) {
-        if (this.responseImp != null) {
-            JSONArrayResponse jsonArrayResponse = (JSONArrayResponse) this.responseImp;
-            jsonArrayResponse.onResponse(array);
-        } else {
-            Log.d(TAG, "No response implementation");
-        }
-    }
-
-
-    public boolean isArrayResponse() {
-        return this.responseImp instanceof JSONArrayResponse;
+        responseImp.onError(ErrorCode.UNKNOWN, null);
     }
 
     public void onError(){
