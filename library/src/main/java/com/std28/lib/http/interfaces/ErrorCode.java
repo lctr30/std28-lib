@@ -7,6 +7,7 @@ package com.std28.lib.http.interfaces;
 
 public interface ErrorCode {
     int OK = 200;
+    int CREATED = 201;
     int TIMEOUT = -1;
     int PARSER = -2;
     int SERVER = -3;

@@ -112,7 +112,8 @@ public class AsyncHttp
         }
 
         protected void onPostExecute(Void params) {
-            if (this.response.getCode() == ErrorCode.OK) {
+            if (this.response.getCode() == ErrorCode.OK ||
+                    this.response.getCode() == ErrorCode.CREATED) {
                 this.response.onResponse();
             } else {
                 this.response.onError();
