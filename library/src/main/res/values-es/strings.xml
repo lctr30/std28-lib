@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Lib</string>
     <string name="please_wait">Por favor, espere…</string>
+    <string name="error">Error</string>
+    <string name="error.msg.timeout">Error de tiempo de espera</string>
+    <string name="error.msg.unknown">Error desconocido</string>
+    <string name="error.msg.parser">Error de parseo</string>
+    <string name="error.msg.no_internet">Error de conexión a internet</string>
+
 </resources>
