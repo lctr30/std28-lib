@@ -8,8 +8,10 @@ import com.std28.lib.http.interfaces.Response;
 import com.std28.lib.implementations.PreferencesImp;
 import com.std28.lib.utils.NetworkUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +34,7 @@ public abstract class BaseRequest
     private HashMap<String, String> mParameters;
     private String endpoint;
     private Method method;
+    private ArrayList<String> toUrlList;
 
     public BaseRequest() {
         super();
@@ -60,9 +63,25 @@ public abstract class BaseRequest
         return this;
     }
 
+    private String addedToUrl() {
+        String[] array = new String[toUrlList.size()];
+        return StringUtils.join(toUrlList.toArray(array), "/");
+    }
 
     public String getEndpoint() {
+        if (toUrlList != null && !toUrlList.isEmpty()) {
+            toUrlList.add(0, endpoint);
+            return addedToUrl();
+        }
         return endpoint;
+    }
+
+    public BaseRequest addToUrl(String toUrl) {
+        if (toUrlList == null) {
+            toUrlList = new ArrayList<>();
+        }
+        toUrlList.add(toUrl);
+        return this;
     }
 
     protected BaseRequest setEndpoint(String endpoint) {
