@@ -19,7 +19,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 
-
+@SuppressWarnings("WeakerAccess")
 public class AsyncHttp
     implements Consts
 {
@@ -27,7 +27,7 @@ public class AsyncHttp
     public static String TAG = "AsyncHttp";
 
     private static final OkHttpClient client;
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     static {
         client = new OkHttpClient.Builder()
@@ -37,13 +37,15 @@ public class AsyncHttp
     }
 
 
+    @SuppressWarnings("WeakerAccess")
     public AsyncHttp() {
         super();
     }
 
     public void execute(BaseRequest request, BaseResponse response) {
-        AsyncRequest task = new AsyncRequest(request, response);
-        task.execute();
+        HttpPair httpPair = new HttpPair(request, response);
+        AsyncRequest task = new AsyncRequest();
+        task.execute(httpPair);
     }
 
     public static void syncCall(BaseRequest request, BaseResponse response) {
@@ -95,28 +97,21 @@ public class AsyncHttp
 
 
 
-    class AsyncRequest extends AsyncTask<Void, Void, Void> {
-        BaseRequest request;
-        BaseResponse response;
-
-        AsyncRequest(BaseRequest request, BaseResponse response) {
-            super();
-            this.request = request;
-            this.response = response;
-        }
+    static class AsyncRequest extends AsyncTask<HttpPair, Void, HttpPair> {
 
         @Override
-        protected Void doInBackground(Void... none) {
-            syncCall(this.request, this.response);
-            return null;
+        protected HttpPair doInBackground(HttpPair... objects) {
+            HttpPair pair = objects[0];
+            syncCall(pair.request, pair.response);
+            return pair;
         }
 
-        protected void onPostExecute(Void params) {
-            if (this.response.getCode() == ErrorCode.OK ||
-                    this.response.getCode() == ErrorCode.CREATED) {
-                this.response.onResponse();
+        protected void onPostExecute(HttpPair httpPair) {
+            if (httpPair.response.getCode() == ErrorCode.OK ||
+                    httpPair.response.getCode() == ErrorCode.CREATED) {
+                httpPair.response.onResponse();
             } else {
-                this.response.onError();
+                httpPair.response.onError();
             }
         }
     }
@@ -157,7 +152,7 @@ public class AsyncHttp
         debug(TAG, builder.toString());
     }
 
-    static void debug(String tag, String string) {
+    private static void debug(String tag, String string) {
         if (DEBUG) {
             Log.d(tag, string);
         }
