@@ -63,15 +63,16 @@ public abstract class BaseRequest
         return this;
     }
 
-    private String addedToUrl() {
-        String[] array = new String[toUrlList.size()];
-        return StringUtils.join(toUrlList.toArray(array), "/");
+    private String addedToUrl(ArrayList<String> toAdd) {
+        String[] array = new String[toAdd.size()];
+        return StringUtils.join(toAdd.toArray(array), "/");
     }
 
     public String getEndpoint() {
         if (toUrlList != null && !toUrlList.isEmpty()) {
-            toUrlList.add(0, endpoint);
-            return addedToUrl();
+            ArrayList<String> toAdd = new ArrayList<>(toUrlList);
+            toAdd.add(0, endpoint);
+            return addedToUrl(toAdd);
         }
         return endpoint;
     }
