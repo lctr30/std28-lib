@@ -13,4 +13,5 @@ public interface ErrorCode {
     int SERVER = -3;
     int NO_INTERNET = -4;
     int UNKNOWN = -5;
+    int NO_CONNECT = -6;
 }

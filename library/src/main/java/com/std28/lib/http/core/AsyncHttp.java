@@ -7,6 +7,7 @@ import android.util.Log;
 import com.std28.lib.defs.Consts;
 import com.std28.lib.http.interfaces.ErrorCode;
 
+import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
 
@@ -87,6 +88,9 @@ public class AsyncHttp
         } catch (SocketTimeoutException t) {
             response.setCode(ErrorCode.TIMEOUT);
             response.setErrorMessage(t.getMessage());
+        } catch (ConnectException ce) {
+            response.setCode(ErrorCode.NO_CONNECT);
+            response.setErrorMessage(ce.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             response.setCode(ErrorCode.UNKNOWN);
