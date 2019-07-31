@@ -1,7 +1,7 @@
 package com.std28.lib.activities;
 
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class BaseActivity
     extends AppCompatActivity

@@ -1,7 +1,6 @@
 package com.std28.lib.interfaces;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.Fragment;
 
 /**
  * Created by Mauricio Barcelo on 11/02/18.
