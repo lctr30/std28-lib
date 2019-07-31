@@ -36,6 +36,7 @@ public class BaseEventActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (!isRegistered) {
             EventBus.getDefault().register(this);
+            isRegistered = true;
         }
     }
 
